@@ -1,22 +1,65 @@
-import csv
+### SI 201 Project 1: CSV
+### Name: Jackson Miller
+### Uniqname: miljack
+### UMID: 7012 3312
+### Collaborators: Vittorio Centore and ChatGPT 5.0 and Gemini Pro
+### Gen AI Statement: Used ChatGPT for general potential function outlines for inputs, outputs, and usage,
+### , and for our flowchart ideas. We used Gemini and ChatGPT collectively for general debugging help.
 
-def import_csv(file_path):
-    data =[]
-    with open(file_path, newline='') as csvfile:
-        file_reader = csv.reader(csvfile)
-        for row in file_reader:
-            data.append(row)
-    return data
+
+
+
+
+import csv
 
 
 
 def load_data(csv_file: str):
     """
-    Reads CSV into a suitable data structure (list of dicts).
-    INPUT: csv_file (str)
-    OUTPUT: data (list of dicts)
+    This is a combined function that both imports the csv file 
+    and creates a dictionary for each line
+
+
+    using try except since we are reading in files 
     """
-    pass
+    data = []
+    with open(csv_file, newline='') as f:
+        reader = csv.DictReader(f)
+        for row in reader:
+
+
+            ## reading in each row for our columns. While the columns below may not be our
+            ## selected ones, we have to read them in correctly or they return none
+            ## so we read in by float or int depending on context
+            ## Using try except because of file opening risk 
+            if row.get("bill_length_mm"):
+                try:
+                    row["bill_length_mm"] = float(row["bill_length_mm"])
+                except ValueError:
+                    row["bill_length_mm"] = None
+
+            if row.get("bill_depth_mm"):
+                try:
+                    row["bill_depth_mm"] = float(row["bill_depth_mm"])
+                except ValueError:
+                    row["bill_depth_mm"] = None
+
+            if row.get("flipper_length_mm"):
+                try:
+                    row["flipper_length_mm"] = int(row["flipper_length_mm"])
+                except ValueError:
+                    row["flipper_length_mm"] = None
+
+            if row.get("body_mass_g"):
+                try:
+                    row["body_mass_g"] = int(row["body_mass_g"])
+                except ValueError:
+                    row["body_mass_g"] = None
+
+
+            ### For rows that don't need int or float conversion, just append 
+            data.append(row)
+    return data
 
 
 def calculate_average_body_mass(data):
@@ -74,14 +117,26 @@ def main():
     """
 
     file_path = "project_work/penguins.csv"
-    print(">>> Entered main()")             # confirm main is running
-    print(">>> Looking for:", file_path)    # confirm where it thinks the file is
+
+    # Confirms the file path is correct          
+    print(">>> Looking for:", file_path)    
     
-    csv_data = import_csv(file_path)
-    print(">>> Rows loaded:", len(csv_data)) # confirm if anything was read
-    
+    csv_data = load_data(file_path)
+
+    # confirming csv_data produces desired output 
+    print(">>> Rows loaded:", len(csv_data))
     for row in csv_data:
         print(row)
+
+
+    # for future notice 
+    '''
+    find_heavy_gentoo_count(csv_data)
+    for d in csv_data:
+        if d["species"] == 
+    '''
+
+
 
 
 main()
