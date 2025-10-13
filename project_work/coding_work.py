@@ -11,6 +11,7 @@
 
 
 import csv
+import unittest
 
 
 
@@ -66,9 +67,44 @@ def calculate_average_body_mass(data):
     """
     Calculates average body mass for each penguin species.
     INPUT: data (list of dicts)
-    OUTPUT: avg_body_mass (dict {species: avg_mass})
+    OUTPUT: avg_body_mass (dict {species: avg_mass}) to a new file
     """
-    pass
+
+    avg_body_mass = {}
+    for row in data:
+        row_species = row["species"]
+        row_mass = row["body_mass_g"]
+        if row_mass is None:
+            row["body_mass_g"] = 0
+        if row_species is None:
+            row["species"] = "Unknown"
+        
+
+        ## Using dict to store mass for each species 
+
+        if row_species not in avg_body_mass:
+            avg_body_mass[row_species] = {}
+            avg_body_mass[row_species] = 0
+        
+        avg_body_mass[row_species] += row_mass
+
+    
+    for species in avg_body_mass:
+        count = sum(1 for row in data if row["species"] == species and row["body_mass_g"] is not None)
+        if count > 0:
+            avg_body_mass[species] /= count
+        else:
+            avg_body_mass[species] = 0
+    
+
+    #with open("average_body_mass.txt", "w") as f:
+       # for species in avg_body_mass.items():
+        #    f.write(f"{species[0]}: {species[1]:.2f} g\n")
+
+    print(">>> Avg body mass:", avg_body_mass)
+    return avg_body_mass
+
+    
 
 
 def select_heavy_bills(data):
@@ -109,6 +145,29 @@ def find_heavy_gentoo_count(data):
     pass
 
 
+class test_work(unittest.TestCase):
+    def test_load_data(self):
+        data = load_data("project_work/penguins.csv")
+        self.assertIsInstance(data, list)
+        self.assertGreater(len(data), 0)
+        self.assertIsInstance(data[0], dict)
+        self.assertEqual(set(data[0].keys()), {'', 'species', 'island', 'bill_length_mm', 'bill_depth_mm', 'flipper_length_mm', 'body_mass_g', 'sex', 'year'})
+
+    def test_calculate_average_body_mass(self):
+        data = [
+            {"species": "Adelie", "body_mass_g": 3700},
+            {"species": "Adelie", "body_mass_g": 3800},
+            {"species": "Chinstrap", "body_mass_g": 3500},
+            {"species": "Chinstrap", "body_mass_g": 3000},
+            {"species": "Gentoo", "body_mass_g": 5000},
+        ]
+        avg_body_mass = calculate_average_body_mass(data)
+        self.assertAlmostEqual(avg_body_mass["Adelie"], 3750.0)
+        self.assertAlmostEqual(avg_body_mass["Chinstrap"], 3250.0)
+        self.assertAlmostEqual(avg_body_mass["Gentoo"], 5000.0)
+
+
+
 def main():
     """
     Calls the other functions in a logical sequence.
@@ -139,4 +198,12 @@ def main():
 
 
 
-main()
+
+
+
+if __name__ == "__main__":
+    main()  # optional: runs your main function
+    unittest.main()
+
+
+
