@@ -72,27 +72,26 @@ def calculate_average_body_mass(data):
 
     avg_body_mass = {}
     for row in data:
-        row_species = row["species"]
-        row_mass = row["body_mass_g"]
+        row_species = row.get("species")
+        row_mass = row.get("body_mass_g")
         if row_mass is None:
-            row["body_mass_g"] = 0
-        if row_species is None:
-            row["species"] = "Unknown"
+            #changed from setting to zero to skipping to avoid skewing
+            continue
+        
         
 
         ## Using dict to store mass for each species 
 
         if row_species not in avg_body_mass:
-            avg_body_mass[row_species] = {}
-            avg_body_mass[row_species] = 0
+            avg_body_mass[row_species] = {"total_mass": 0, "count": 0}
         
-        avg_body_mass[row_species] += row_mass
+        avg_body_mass[row_species]["total_mass"] += row_mass
+        avg_body_mass[row_species]["count"] += 1 
 
     
-    for species in avg_body_mass:
-        count = sum(1 for row in data if row["species"] == species and row["body_mass_g"] is not None)
-        if count > 0:
-            avg_body_mass[species] /= count
+    for species, values in avg_body_mass.items():
+        if values["count"] > 0:
+            avg_body_mass[species] = values["total_mass"] / values["count"]
         else:
             avg_body_mass[species] = 0
     
@@ -114,7 +113,27 @@ def select_heavy_bills(data):
     INPUT: data (list of dicts)
     OUTPUT: avg_bill_length (float)
     """
-    pass
+    
+    heavy_bills = [p for p in data 
+                   if p.get("body_mass_g") and p["body_mass_g"] > 3500 
+                   and p.get("bill_length_mm")]
+
+    if heavy_bills:
+        avg_bill_length = sum(p["bill_length_mm"] for p in heavy_bills) / len(heavy_bills)
+    else:
+        avg_bill_length = 0  # handle no heavy bills
+
+
+     # with open("average_bill_length_above_3500g.txt", "w") as f:
+    #    f.write(f"Average bill length for penguins with body mass > 3500g: {avg_bill_length:.2f} mm\n")
+
+
+    print(f">>> Avg bill length for body mass > 3500g: {avg_bill_length:.3f} mm")
+    return avg_bill_length
+    
+  
+  
+   
 
 
 def find_upper_quartile_long_bills(data):
@@ -158,14 +177,29 @@ class test_work(unittest.TestCase):
             {"species": "Adelie", "body_mass_g": 3700},
             {"species": "Adelie", "body_mass_g": 3800},
             {"species": "Chinstrap", "body_mass_g": 3500},
-            {"species": "Chinstrap", "body_mass_g": 3000},
+            {"species": "Chinstrap", "body_mass_g": None},
             {"species": "Gentoo", "body_mass_g": 5000},
         ]
         avg_body_mass = calculate_average_body_mass(data)
         self.assertAlmostEqual(avg_body_mass["Adelie"], 3750.0)
-        self.assertAlmostEqual(avg_body_mass["Chinstrap"], 3250.0)
+        self.assertAlmostEqual(avg_body_mass["Chinstrap"], 3500.0)
         self.assertAlmostEqual(avg_body_mass["Gentoo"], 5000.0)
 
+    def test_select_heavy_bills(self):
+        data = [
+            {"body_mass_g": 3600, "bill_length_mm": 40},
+            {"body_mass_g": 3700, "bill_length_mm": 42},
+            {"body_mass_g": 3400, "bill_length_mm": 39},
+            {"body_mass_g": None, "bill_length_mm": 41}
+        ]
+        avg_bill_length = select_heavy_bills(data)
+        self.assertAlmostEqual(avg_bill_length, 41.0)
+        self.assertEqual(select_heavy_bills([]), 0)
+        self.assertEqual(select_heavy_bills([{"body_mass_g": 3000, "bill_length_mm": 40}]), 0)
+        
+
+        
+        
 
 
 def main():
@@ -189,6 +223,10 @@ def main():
 
 
     # for future notice 
+    calculate_average_body_mass(csv_data)
+    select_heavy_bills(csv_data)
+
+
     '''
     find_heavy_gentoo_count(csv_data)
     for d in csv_data:
