@@ -74,7 +74,8 @@ def calculate_average_body_mass(data):
     for row in data:
         row_species = row.get("species")
         row_mass = row.get("body_mass_g")
-        if row_mass is None:
+        flipper = row.get("flipper_length_mm")
+        if row_mass or flipper is None:
             #changed from setting to zero to skipping to avoid skewing
             continue
         
@@ -100,7 +101,7 @@ def calculate_average_body_mass(data):
        # for species in avg_body_mass.items():
         #    f.write(f"{species[0]}: {species[1]:.2f} g\n")
 
-    print(">>> Avg body mass:", avg_body_mass)
+    print(">>> Avg body mass with valid flipper data:", avg_body_mass)
     return avg_body_mass
 
     
