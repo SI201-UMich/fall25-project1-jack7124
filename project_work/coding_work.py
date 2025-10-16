@@ -259,10 +259,21 @@ class test_work(unittest.TestCase):
             {"species": "Chinstrap", "body_mass_g": None, 'flipper_length_mm': 198},
             {"species": "Gentoo", "body_mass_g": 5000, "flipper_length_mm": 210}
         ]
+        data_edge = [
+            {"species": "Adelie", "body_mass_g": None, "flipper_length_mm": None},
+            {"species": "Chinstrap", "body_mass_g": 100000000000000000, "flipper_length_mm": 200},
+            {"species": "Gentoo", "body_mass_g": -5000, "flipper_length_mm": 210}
+        ]
         avg_body_mass = calculate_average_body_mass(data)
         self.assertAlmostEqual(avg_body_mass["Adelie"], 3750.0)
         self.assertAlmostEqual(avg_body_mass["Chinstrap"], 3500.0)
         self.assertAlmostEqual(avg_body_mass["Gentoo"], 5000.0)
+
+        avg_mass_edge = calculate_average_body_mass(data_edge)
+        self.assertAlmostEqual(avg_mass_edge["Adelie"], 0)
+        self.assertAlmostEqual(avg_mass_edge["Chinstrap"], 100000000000000000)
+        self.assertAlmostEqual(avg_mass_edge["Gentoo"], -5000)
+
 
     def test_select_heavy_bills(self):
         data = [
@@ -271,8 +282,26 @@ class test_work(unittest.TestCase):
             {"body_mass_g": 3400, "bill_length_mm": 39, "bill_depth_mm": 16.0},
             {"body_mass_g": None, "bill_length_mm": 41, "bill_depth_mm": 19.0},
         ]
+
         avg_bill_length = select_heavy_bills(data)
+
+        ## this tests only the first two since the 3rd is below 3500g and the 4th doesn't have mass data 
         self.assertAlmostEqual(avg_bill_length, 41.0)
+
+        data_2 = [
+            {"body_mass_g": 4000, "bill_length_mm": 40, "bill_depth_mm": 18.0},
+            {"body_mass_g": 4500, "bill_length_mm": 44, "bill_depth_mm": 20.0},
+        ]
+        avg_bill_length_2 = select_heavy_bills(data_2)
+        self.assertAlmostEqual(avg_bill_length_2, 42.0)
+
+        # testing none mass 
+        self.assertIsNone({"body_mass_g": None, "bill_length_mm": 41, "bill_depth_mm": 19.0}.get("body_mass_g"))
+
+        
+        ## testing edge case, exact mass 3500
+        mass_3500 = {"body_mass_g": 3500, "bill_length_mm": 40, "bill_depth_mm": 18.0}
+        self.assertAlmostEqual(select_heavy_bills([mass_3500]), 0)  # should not be included
     
     def test_find_upper_quartile_long_bills(self):
         data = [
@@ -335,14 +364,15 @@ def main():
     
 
     # for future notice 
+    '''
     calculate_average_body_mass(csv_data)
     select_heavy_bills(csv_data)
     find_heavy_gentoo_count(csv_data)
     find_upper_quartile_long_bills(csv_data)
     find_heavy_quartile_long_bills(csv_data)
-    
+    '''
 
-   
+    print("These results have been outputted to penguin_calculation_results.txt")
     ## writing to a file
     output_function(csv_data)
 
@@ -352,7 +382,7 @@ def main():
 
 
 if __name__ == "__main__":
-    main()  # optional: runs your main function
+    #main()  # optional: runs your main function
     unittest.main()
 
 
