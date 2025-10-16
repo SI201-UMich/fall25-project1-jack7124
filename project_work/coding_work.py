@@ -65,6 +65,9 @@ def load_data(csv_file: str):
 
 
 def calculate_average_body_mass(data):
+
+    # Jackson's function 
+
     """
     Calculates average body mass for each penguin species.
     INPUT: data (list of dicts)
@@ -109,6 +112,7 @@ def calculate_average_body_mass(data):
 
 
 def select_heavy_bills(data):
+    # Jackson's function 
     """
     Filters penguins with body mass > 3500g 
     and calculates average bill length.
@@ -141,13 +145,14 @@ def select_heavy_bills(data):
 
 
 def find_upper_quartile_long_bills(data):
+    ### Vittorio's function 
     """
     Identifies penguins in upper 25% of body mass 
     that also have a bill length > 42 mm.
     INPUT: data (list of dicts)
     OUTPUT: num_upper_quartile_long_bills (int)
     """
-    pass
+    
 
 
     valid_masses = [p["body_mass_g"] for p in data if p.get("body_mass_g")]
@@ -173,12 +178,21 @@ def find_upper_quartile_long_bills(data):
 
 
 def find_heavy_quartile_long_bills(data):
+    ### Vittorio's function 
     """
     Counts penguins with body mass > 4000g.
     INPUT: data (list of dicts)
     OUTPUT: count (int)
     """
-    pass
+
+    # filters based on minimum mass threshold
+    heavy_penguins = [p for p in data if p.get("body_mass_g") and p["body_mass_g"] > 4000]
+
+    count = len(heavy_penguins)
+
+    print(f">>> Total penguins with body mass > 4000g: {count}")
+    return count
+
 
 
 def find_heavy_gentoo_count(data):
@@ -187,7 +201,16 @@ def find_heavy_gentoo_count(data):
     INPUT: data (list of dicts)
     OUTPUT: count (int)
     """
-    pass
+
+    gentoo_heavy = [p for p in data 
+                    if p.get("species") == "Gentoo" 
+                    and p.get("body_mass_g") 
+                    and p["body_mass_g"] > 4000]
+
+    count = len(gentoo_heavy)
+
+    print(f">>> Total Gentoo penguins with body mass > 4000g: {count}")
+    return count
 
 
 class test_work(unittest.TestCase):
@@ -220,8 +243,40 @@ class test_work(unittest.TestCase):
         ]
         avg_bill_length = select_heavy_bills(data)
         self.assertAlmostEqual(avg_bill_length, 41.0)
-        #self.assertEqual(select_heavy_bills([]), 0)
-        #self.assertEqual(select_heavy_bills([{"body_mass_g": 3000, "bill_length_mm": 40, "bill_depth_mm": 18.0}]), 0)
+    
+    def test_find_upper_quartile_long_bills(self):
+        data = [
+            {"body_mass_g": 3000, "bill_length_mm": 40},
+            {"body_mass_g": 3600, "bill_length_mm": 43},
+            {"body_mass_g": 4200, "bill_length_mm": 44},
+            {"body_mass_g": 4600, "bill_length_mm": 41},
+            {"body_mass_g": 4800, "bill_length_mm": 45}
+        ]
+        result = find_upper_quartile_long_bills(data)
+        self.assertEqual(result, 2)  # top 25% mass + bill length > 42
+
+    def test_find_heavy_quartile_long_bills(self):
+        data = [
+            {"body_mass_g": 3900},
+            {"body_mass_g": 4100},
+            {"body_mass_g": 4500},
+            {"body_mass_g": None},
+        ]
+        result = find_heavy_quartile_long_bills(data)
+        self.assertEqual(result, 2)  # two above 4000
+
+    def test_find_heavy_gentoo_count(self):
+        data = [
+            {"species": "Gentoo", "body_mass_g": 4100},
+            {"species": "Gentoo", "body_mass_g": 3900},
+            {"species": "Adelie", "body_mass_g": 4500},
+            {"species": "Gentoo", "body_mass_g": 4200},
+        ]
+        result = find_heavy_gentoo_count(data)
+        self.assertEqual(result, 2)  # only two Gentoo above 4000
+
+
+        
         
 
         
@@ -243,21 +298,21 @@ def main():
     csv_data = load_data(file_path)
 
     # confirming csv_data produces desired output 
+    
     print(">>> Rows loaded:", len(csv_data))
-    for row in csv_data:
-        print(row)
-
+    #for row in csv_data:
+    #    print(row)
+    
 
     # for future notice 
     calculate_average_body_mass(csv_data)
     select_heavy_bills(csv_data)
-
-
-    '''
     find_heavy_gentoo_count(csv_data)
-    for d in csv_data:
-        if d["species"] == 
-    '''
+    find_upper_quartile_long_bills(csv_data)
+    find_heavy_quartile_long_bills(csv_data)
+    
+
+   
 
 
 
