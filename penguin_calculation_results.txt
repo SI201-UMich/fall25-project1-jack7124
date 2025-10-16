@@ -1,0 +1,17 @@
+These are the results of the penguin calculations in coding_work.py
+First Jackson calculated average body mass for each species:
+Average Body Mass by Species: {'Adelie': 3700.662251655629, 'Gentoo': 5076.016260162602, 'Chinstrap': 3733.0882352941176}
+
+Next Jackson calculated average bill length for penguins with body mass > 3500g and bill depth >= 17.0mm:
+Average Bill Length for Penguins above 3500g Body Weight and With Bill Depth Greater Than or Equal to 17.0 mm: 43.60 mm
+
+Then Vittorio counted the penguins in the upper 25 percentile of body mass and bill length > 42 mm:
+Count of Penguins in the Upper 25% of Body Mass With Bill Length > 42 mm: 90
+
+Next Vittorio counted the total penguins with body mass > 4000g:
+Total Penguins with Body Mass > 4000g: 172
+
+Finally Vittorio counted the total Gentoo penguins with body mass > 4000g:
+Total Gentoo Penguins with Body Mass > 4000g: 122
+
+Penguins results completed.

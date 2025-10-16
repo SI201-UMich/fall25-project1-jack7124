@@ -101,9 +101,8 @@ def calculate_average_body_mass(data):
             avg_body_mass[species] = 0
     
 
-    #with open("average_body_mass.txt", "w") as f:
-       # for species in avg_body_mass.items():
-        #    f.write(f"{species[0]}: {species[1]:.2f} g\n")
+   
+       
 
     print(">>> Avg body mass with valid flipper data:", avg_body_mass)
     return avg_body_mass
@@ -212,6 +211,37 @@ def find_heavy_gentoo_count(data):
     print(f">>> Total Gentoo penguins with body mass > 4000g: {count}")
     return count
 
+def output_function(data):
+    """
+    output results of all functions to a new .txt file
+    
+    """
+    with open("penguin_calculation_results.txt", "w") as f:
+        f.write("These are the results of the penguin calculations in coding_work.py\n")
+
+        f.write("First Jackson calculated average body mass for each species:\n")
+        avg_body_mass = calculate_average_body_mass(data)
+        f.write(f"Average Body Mass by Species: {avg_body_mass}\n\n")
+
+        f.write("Next Jackson calculated average bill length for penguins with body mass > 3500g and bill depth >= 17.0mm:\n")
+        bill_length = select_heavy_bills(data)
+        f.write(f"Average Bill Length for Penguins above 3500g Body Weight and With Bill Depth Greater Than or Equal to 17.0 mm: {bill_length:.2f} mm\n\n")
+
+        f.write("Then Vittorio counted the penguins in the upper 25 percentile of body mass and bill length > 42 mm:\n")
+        upper_quartile = find_upper_quartile_long_bills(data)
+        f.write(f"Count of Penguins in the Upper 25% of Body Mass With Bill Length > 42 mm: {upper_quartile}\n\n")
+
+        f.write("Next Vittorio counted the total penguins with body mass > 4000g:\n")
+        heavy_penguins = find_heavy_quartile_long_bills(data)
+        f.write(f"Total Penguins with Body Mass > 4000g: {heavy_penguins}\n\n")
+
+        f.write("Finally Vittorio counted the total Gentoo penguins with body mass > 4000g:\n")
+        heavy_gentoos = find_heavy_gentoo_count(data)
+        f.write(f"Total Gentoo Penguins with Body Mass > 4000g: {heavy_gentoos}\n")
+        f.write("\nPenguins results completed.")
+        f.close()
+
+
 
 class test_work(unittest.TestCase):
     def test_load_data(self):
@@ -313,7 +343,8 @@ def main():
     
 
    
-
+    ## writing to a file
+    output_function(csv_data)
 
 
 
