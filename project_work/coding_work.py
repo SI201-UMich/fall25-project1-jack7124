@@ -12,6 +12,7 @@
 
 import csv
 import unittest
+import math
 
 
 
@@ -147,6 +148,28 @@ def find_upper_quartile_long_bills(data):
     OUTPUT: num_upper_quartile_long_bills (int)
     """
     pass
+
+
+    valid_masses = [p["body_mass_g"] for p in data if p.get("body_mass_g")]
+    if not valid_masses:
+        return 0
+
+    valid_masses.sort()
+    # Use floor to include 75th percentile and above
+    index_75 = math.floor(0.75 * len(valid_masses)) - 1
+    if index_75 < 0:
+        index_75 = 0
+    upper_cutoff = valid_masses[index_75]
+
+    long_bills = [
+        p for p in data
+        if p.get("body_mass_g") and p["body_mass_g"] >= upper_cutoff
+        and p.get("bill_length_mm") and p["bill_length_mm"] > 42
+    ]
+
+    count = len(long_bills)
+    print(f">>> Penguins in top 25% body mass AND bill length > 42mm: {count}")
+    return count
 
 
 def find_heavy_quartile_long_bills(data):
